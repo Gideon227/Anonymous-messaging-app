@@ -2,8 +2,8 @@ import { connectToDB } from "@/utils/database";
 import User from "@/model/user";
 
 export const GET = async (request: Request) => {
-  const url = new URL(request.url); // Parse the request URL
-  const username = url.searchParams.get("username"); // Get the `username` query parameter
+  const url = new URL(request.url); 
+  const username = url.searchParams.get("username"); 
 
   try {
     await connectToDB();

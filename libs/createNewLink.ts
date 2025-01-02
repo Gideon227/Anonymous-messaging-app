@@ -9,9 +9,9 @@ export default async function createNewLink( linkId: string, userId: string ) {
         })
 
         if(response.ok){
-            console.log('New User Added')
+            console.log('New Link Added')
         }else {
-            console.error('Failed to create profile', await response.text());
+            console.error('Failed to create link', await response.text());
         }
         
     } catch (error) {

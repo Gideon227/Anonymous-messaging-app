@@ -35,3 +35,24 @@ export const POST = async (request: Request) => {
         return new Response("Failed to create a new link",{ status: 500 })
     }
 }
+
+
+export const GET = async (request: Request) => {
+  const url = new URL(request.url); 
+  const linkId = url.searchParams.get("link"); 
+
+  try {
+    await connectToDB();
+
+    if (!linkId) {
+      return new Response("Link is required", { status: 400 });
+    }
+
+    const existingLink = await Link.findOne({ linkId });
+
+    return new Response(JSON.stringify(existingLink), { status: 200 });      
+  } catch (error) {
+    console.error(error);
+    return new Response("Failed to fetch link", { status: 500 });
+  }
+};

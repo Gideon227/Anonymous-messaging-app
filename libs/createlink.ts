@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import Link from "@/model/link";
 import { connectToDB } from "@/utils/database"; 
+import getSingleLink from "./getSingleLink";
 
 export const createUniqueLinkId = async (): Promise<string> => {
   let linkId = "";
@@ -13,15 +14,12 @@ export const createUniqueLinkId = async (): Promise<string> => {
     while (!isUnique) {
       linkId = uuidv4();
       
-      const existingLink = await Link.findOne({ linkId });
+      const existingLink = await getSingleLink(linkId)
 
       if (!existingLink) {
         isUnique = true;
       }
     }
-
-    const newLink = new Link({ linkId });
-    await newLink.save();
 
     return linkId;
   } catch (error) {
