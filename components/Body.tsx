@@ -18,7 +18,7 @@ const Body = () => {
                                     Private app for anonymous, safe, and open conversations with others.
                                 </h1>
                             </div>
-                            <div className='space-y-4 mb-8'>
+                            <div className='space-y-5 mb-8'>
                                 <div className="flex gap-3 items-start">
                                     <div className='mt-1 rounded-lg border border-black/10 p-1 flex-shrink-0'>
                                         <LiaUserSecretSolid size={18}/>

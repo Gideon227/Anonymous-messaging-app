@@ -94,11 +94,9 @@ const Conversation = ( { slug }: { slug: string } ) => {
       
 
     useEffect(() => {
-        console.log("socket io code is initialized")
-        socket.on("connect", () => {
-            console.log("Socket connected")
-        })
-    
+        // socket.on("connect", () => {
+        //     console.log("Socket connected")
+        // })
         socket.emit('joinRoom', `chatroom/${slug}`);
         socket.on("newMessage", (message: IMessage) => {
             setMessages((prevMessages) => [...prevMessages, message]);
@@ -115,7 +113,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
             socket.off("newMessage");
         };
       
-      },[messages])
+      },[])
 
 
     const handleClick = async () => {
@@ -125,9 +123,8 @@ const Conversation = ( { slug }: { slug: string } ) => {
         }
         
         try {
+            socket.emit("sendMessage", { room: `chatroom/${slug}`, message: formData?.message, senderId: formData?.senderId })
             await sendMessage(formData);
-
-            socket.emit("sendMessages", { room: slug, message: formData?.message })
             setFormData((prev) => ({ ...prev, message: "" })); 
             scrollToBottom();
           } catch (error) {
@@ -159,7 +156,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
 
   return (
     <div className='bg-white flex flex-col h-screen relative'>
-        <div className='flex items-center justify-between bg-gray-100 py-4 px-6 fixed top-0 w-full z-10 border-b border-gray-300 md:py-4 md:px-16  max-md:mb-4 border-b-zinc-200 '>
+        <div className='flex items-center justify-between bg-gray-100 py-4 px-6 fixed top-0 w-full z-10 border-b border-gray-300 md:py-3 md:px-16  max-md:mb-4 border-b-zinc-200 '>
             <h1 className='text-[18px] max-lg:text-[16px] text-gray-900 italic font-medium'>Anonymous Chatroom</h1>
             <div className='flex space-x-6 items-center'>
                 <button onClick={() => setShowModal(true)} className='max-md:hidden rounded-full py-1 max-lg:py-1 max-lg:gap-x-1 px-4 border-zinc-500 border flex items-center gap-2 text-[14px] text-zinc-800'>
@@ -171,8 +168,8 @@ const Conversation = ( { slug }: { slug: string } ) => {
             </div>
         </div>
         <div className="lg:w-11/12 max-lg:w-full flex flex-col justify-center mx-auto md:px-12 px-2">
-            <div className='flex-1 overflow-hidden py-24 max-md:pt-20 max-md:pb-24 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
-                <div className="space-y-6 h-full md:mb-4 mb-2">
+            <div className='flex-1 overflow-hidden py-28 max-md:pt-20 max-md:pb-24 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
+                <div className="space-y-6 h-full md:mb-4 mb-2">    
                     {messages.map((msg) => (
                         <div
                         key={msg._id}

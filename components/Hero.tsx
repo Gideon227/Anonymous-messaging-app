@@ -15,6 +15,12 @@ export const Hero = () => {
             <Image src='/file.svg' width={500} height={500} alt='hero section image'/>
         </div>
       </div>
+
+
+      <div className='flex justify-center items-center flex-col space-y-2 py-40'>
+        <h1 className='text-[#2A2827] font-bold text-[40px] max-lg:text-[27px] text-nowrap'>Express Yourself While Protecting Your Privacy</h1>
+        <p className='text-sm font-normal text-[#2A2827] text-nowrap'>Experience true anonymity with every chat. connect, share, and express yourself freely, all without revealing your identity.</p>
+      </div>
     </section>
   )
 }
