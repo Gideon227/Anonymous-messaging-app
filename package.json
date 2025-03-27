@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "globals": "^16.0.0",
     "http": "^0.0.1-security",
     "mongoose": "^8.9.2",
-    "next": "15.1.2",
+    "next": "^15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.4.1",
