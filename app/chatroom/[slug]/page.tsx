@@ -9,7 +9,7 @@ export async function generateStaticParams(){
   }))
 }
 
-const page = async ({ params }: { params: { slug: string } }) => {
+const page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params
 
   return (
