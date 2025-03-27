@@ -18,6 +18,8 @@ import { FaFacebookF } from "react-icons/fa6";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { socket } from '@/libs/socketClient';
 import { IUser } from '@/model/user'
+import { IoIosSend } from "react-icons/io";
+
 
 const Conversation = ( { slug }: { slug: string } ) => {
     const [messages, setMessages] = useState<IMessage[]>([])
@@ -54,12 +56,11 @@ const Conversation = ( { slug }: { slug: string } ) => {
     useEffect(() => {
         const profileFromLocalStorage = localStorage.getItem("profile");
           
-          const profile: Profile = profileFromLocalStorage
+        const profile: Profile = profileFromLocalStorage
             ? JSON.parse(profileFromLocalStorage)
             : null;
 
         const fetchData = async () => {
-      
           if (profile) {
             try {
               const [user, chatMessages] = await Promise.all([
@@ -77,18 +78,17 @@ const Conversation = ( { slug }: { slug: string } ) => {
         };
 
         const fetchUserData = async () => {
-              try {
-                const getData = await getSingleUser(profile?.username);
-                setUserDb(getData);
-              } catch (err) {
-                console.error("Error fetching user data:", err);
-              }
-            };
+          try {
+            const getData = await getSingleUser(profile?.username);
+            setUserDb(getData);
+          } catch (err) {
+              console.error("Error fetching user data:", err);
+          }
+        };
         
-            if (profile?.username) {
-              fetchUserData();
-            }
-      
+        if (profile?.username) {
+           fetchUserData();
+        }
         fetchData();    
       }, []);
       
@@ -101,7 +101,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
         socket.on("newMessage", (message: IMessage) => {
             setMessages((prevMessages) => [...prevMessages, message]);
             scrollToBottom();
-            console.log("listening")
+            console.log(message)
         });
     
         socket.on("disconnect", () => {
@@ -164,39 +164,52 @@ const Conversation = ( { slug }: { slug: string } ) => {
                     <p>Share</p>
                 </button>
                 <span className='max-md:hidden p-2 rounded-full bg-gray-300 hover:bg-gray-500'>{userAvatar && <userAvatar.image size={21} />}</span>
-                <RiShareForward2Fill size={22} className='text-zinc-600 md:hidden' />
+                <button className='text-zinc-600 md:hidden' onClick={() => setShowModal(true)}><RiShareForward2Fill size={22} /></button>
             </div>
         </div>
         <div className="lg:w-11/12 max-lg:w-full flex flex-col justify-center mx-auto md:px-12 px-2">
-            <div className='flex-1 overflow-hidden py-28 max-md:pt-20 max-md:pb-24 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
-                <div className="space-y-6 h-full md:mb-4 mb-2">    
-                    {messages.map((msg) => (
+            <div className='flex-1 overflow-hidden py-28 max-md:pt-20 max-md:pb-12 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
+                <div className="space-y-4 h-full md:mb-4 mb-2">    
+                    {messages.map((msg, index) => {
+    
+                    const currentSenderId = (msg.senderId as { _id: string })._id
+                    const previousSenderId =
+                        index > 0
+                        ? (messages[index - 1].senderId as { _id: string })._id
+                        : 0;
+
+                    let showName = true
+                    if (currentSenderId === previousSenderId){
+                        showName = false
+                    }
+                        return (
                         <div
-                        key={msg._id}
-                        className={`${
-                            msg.senderId === userDb?._id ? "items-end" : "items-start"
-                        }`}
+                            key={msg._id || index}
+                            className={`${
+                                msg.senderId === userDb?._id ? "items-end" : "items-start"
+                            }`}
                         >
                         <MessageBox
                             message={msg}
                             user={info}
                             userDb={userDb}
+                            showName={showName}
                         />
                         </div>
-                    ))}
+                    )})}
                     <div ref={messageEndRef} />
                 </div>
             </div>
 
             <div className='flex flex-col fixed w-full lg:w-5/6 -translate-x-1/2 bottom-0 left-[50%] px-4 lg:px-10 bg-white py-2 z-50'>
-                <div className='flex justify-between gap-2 max-md:gap-x-[4px] rounded-xl bg-[#F6F6F6] px-1 py-1.5'>
+                <div className='flex justify-between items-center gap-1 max-md:gap-x-[4px] rounded-xl px-1 py-1.5'>
                     <input 
                         type='text'
                         onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
                         required
                         value={formData.message}
                         placeholder='Enter your message here...'
-                        className='bg-transparent outline-none w-full text-gray-600 text-[14px] max-md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
+                        className='bg-[#F6F6F6] rounded-xl py-1 outline-none w-full text-gray-600 text-[14px] max-md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
                     />
 
                     <input 
@@ -205,11 +218,11 @@ const Conversation = ( { slug }: { slug: string } ) => {
                         required
                         value={formData.message}
                         placeholder='Type a message...'
-                        className='bg-transparent outline-none w-full text-gray-600 text-[14px] md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
+                        className='bg-[#F6F6F6] rounded-xl py-2 outline-none w-full text-gray-600 text-[14px] md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
                     />
 
-                    <button onClick={() => handleClick()} className='p-2 bg-white text-gray-800 text-[16px] font-bold rounded-full'>
-                        <FaArrowUp size={14} />
+                    <button onClick={() => handleClick()} className='py-2 text-[#2B59FF] font-bold rounded-full'>
+                        <IoIosSend size={21} />
                     </button>
                 </div>
 

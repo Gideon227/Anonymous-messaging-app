@@ -19,3 +19,7 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.border_style{
+  border: 2px solid #2B59FF;
+}

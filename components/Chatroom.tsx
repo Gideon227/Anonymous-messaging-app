@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Conversation from "@/components/Conversation";
 
@@ -13,7 +13,7 @@ const Chatroom = ({ slug }: { slug: string }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     try {
       const profileFromLocalStorage = localStorage.getItem("profile");
       const parsedProfile: Profile | null = profileFromLocalStorage
@@ -22,14 +22,14 @@ const Chatroom = ({ slug }: { slug: string }) => {
       if (parsedProfile) {
         setProfile(parsedProfile);
       } else {
-        router.push("/create-profile");
+        router.push(`/create-profile?redirect=/chatroom/${slug}`);
       }
     } catch (error) {
       console.error("Error parsing profile:", error);
       router.push("/create-profile");
     }
     setLoading(false);
-  }, [router]);
+  }, []);
   
 
   if (loading) {

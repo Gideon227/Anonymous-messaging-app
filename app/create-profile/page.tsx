@@ -2,41 +2,45 @@
 
 import Setup from "@/components/Setup";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import createUniqueLinkId from "@/libs/createlink";
 import createNewLink from "@/libs/createNewLink";
 import getSingleUser from "@/libs/getSingleUser";
 
-const Page = () => {
+interface Profile {
+  username: string;
+  avatar: number;
+}
+
+const CreateProfilePage = () => {
   const router = useRouter();
+  const [shouldRender, setShouldRender] = useState(false);
 
-  interface Profile {
-    username: string;
-    avatar: number;
-  }
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     const profileFromLocalStorage = localStorage.getItem("profile");
     const profile: Profile | null = profileFromLocalStorage
-      ? (JSON.parse(profileFromLocalStorage) as Profile)
+      ? JSON.parse(profileFromLocalStorage)
       : null;
 
-    const redirectOrSetup = async () => {
-      if (profile) {
+    if (profile) {
+      // If a profile exists, redirect immediately
+      (async () => {
         try {
           const chatRoomLink = await createUniqueLinkId();
-          const userId = await getSingleUser(profile?.username)
-          await createNewLink(chatRoomLink, userId._id )
+          const userId = await getSingleUser(profile.username);
+          await createNewLink(chatRoomLink, userId._id);
           router.push(`/chatroom/${chatRoomLink}`);
         } catch (error) {
           console.error("Failed to create chat room link", error);
+          setShouldRender(true);
         }
-      }
-    };
+      })();
+    } else {
+      setShouldRender(true);
+    }
+  }, [router]);
 
-    redirectOrSetup();
-  }, []);
-
+  if (!shouldRender) return null;
 
   return (
     <div className="lg:mt-32 mt-8">
@@ -45,4 +49,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default CreateProfilePage;

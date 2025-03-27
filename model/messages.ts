@@ -1,12 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { IUser } from './user';
+import User from './user';
+import { Query } from 'mongoose';
 
 // Define the interface for the Message document
 export interface IMessage extends Document {
   chatRoomId: string;
   message: string;
   createdAt: Date;
-  senderId: IUser['_id'];
+  senderId: mongoose.Schema.Types.ObjectId | IUser['_id'];
   _id: string;
 }
 
@@ -23,7 +25,7 @@ const messageSchema = new Schema<IMessage>({
   },
   senderId:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: User,
     required: true,
   },
   createdAt: {
@@ -31,6 +33,14 @@ const messageSchema = new Schema<IMessage>({
     default: Date.now,
   },
 }, { timestamps: true });
+
+messageSchema.pre<Query<any, IMessage>>(/^find/, function (next) {
+  this.populate({
+    path: 'senderId',
+    select: 'username avatar',
+  });
+  next();
+});
 
 // Create the Message model
 const Message = mongoose.models.Message || mongoose.model<IMessage>('Message', messageSchema);

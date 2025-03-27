@@ -6,6 +6,9 @@ import { avatars, Avatar } from "@/constants";
 import React from "react";
 import getSingleUser from '@/libs/getSingleUser';
 import { IUser } from '@/model/user'
+import getUserById from "@/libs/getUserById";
+import { Types } from "mongoose";
+
 
 
 interface Profile {
@@ -17,45 +20,31 @@ interface MessageBoxProps {
   message: IMessage;
   user: Profile;
   userDb: IUser | null;
+  showName: boolean;
 }
 
-const MessageBox: React.FC<MessageBoxProps> = ({ message, user, userDb }) => {
 
-  const userAvatar = avatars.find((avatar) => avatar.id === user.avatar);
-  
+const MessageBox: React.FC<MessageBoxProps> = ({ message, user, userDb, showName }) => {
+  const senderId = message.senderId as IUser;
+
+  const userAvatar = avatars.find((avatar) => avatar.id === senderId.avatar);
 
   return (
-    // <div className="flex gap-2 justify-start items-start">
-    //   <span className="rounded-full shadow bg-[#cecece] p-2 flex items-start pt-6">
-    //     {userAvatar && <userAvatar.image size={18} />}
-    //   </span>
-    //   <div className="flex flex-col space-y-1 items-start justify-start">
-    //     <div className="flex space-x-2 items-center justify-start">
-    //       <h1 className="text-[14px] text-[#7A7A7A] capitalize font-medium">
-    //         {user.username}
-    //       </h1>  
-    //     </div>
-    //     <div className="min-h-10 px-4 py-3 bg-[#F6F6F6] rounded-lg">
-    //       <p className="text-[16px] max-md:text-[12px] text-black font-medium leading-6">
-    //         {message.message}
-    //       </p>
-    //     </div>
-    //   </div>
-    // </div>
-
-    <div>
-      <div className={`flex flex-col space-y-1 ${message.senderId === userDb?._id && "items-end flex-wrap"}`}>
-        <h1 className={`text-[14px] text-[#7A7A7A] capitalize font-medium ml-11 ${message.senderId === userDb?._id && "flex items-end mr-11"}`}>
-          {user.username}
-        </h1> 
-        <div className={`flex gap-x-2 justify-start items-start ${message.senderId === userDb?._id && "flex-row-reverse justify-end"}`}>
-          <span className="rounded-full shadow bg-[#cecece] p-2">
-            {userAvatar && <userAvatar.image size={16} />}
+    <div className={`${!showName && '-mt-1'}`}>
+      <div className={`flex flex-col space-y-1 ${senderId?._id === userDb?._id && "items-end flex-wrap"}`}>
+        {showName && (
+          <h1 className={`text-[13px] text-[#7A7A7A] capitalize font-medium ml-11 items-center ${senderId?._id === userDb?._id ? "flex items-end mr-11" : ""}`}>
+            {senderId.username}
+          </h1>
+        )}
+        <div className={`flex gap-x-2 justify-start items-start ${senderId?._id === userDb?._id && "flex-row-reverse justify-end"}`}>
+          <span className={`rounded-full shadow bg-[#cecece] p-2 ${!showName && 'mx-[7px] invisible'}`}>
+            { userAvatar && showName && <userAvatar.image size={16} />}
           </span>
-          
-          <div className={`px-5 py-2.5 bg-[#F6F6F6] rounded-3xl ${message.senderId === userDb?._id && "bg-blue-600"}`}>
-            <p className={`text-[14px] max-md:text-[14px] text-[#565558] font-medium leading-6 ${message.senderId === userDb?._id && "text-white "}`}>
+          <div className={`px-3.5 pt-2 bg-[#F6F6F6] rounded-2xl items-center ${senderId?._id === userDb?._id && "bg-blue-600"}`}>
+            <p className={`text-[14px] max-md:text-[13px] max-md:leading-5 text-[#565558] font-medium leading-6 ${senderId?._id === userDb?._id && "text-gray-200"}`}>
               {message.message}
+              <span className={`flex items-end justify-end text-[8px] px-1 font-normal pt-1 ${senderId?._id === userDb?._id && "!justify-start"}`}>{new Date(message.createdAt).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</span>
             </p>
           </div>
         </div>

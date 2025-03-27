@@ -1,4 +1,5 @@
 import { connectToDB } from "@/utils/database";
+import User from "@/model/user";
 import Message from "@/model/messages";
 
 export const POST = async (request: Request) => {
