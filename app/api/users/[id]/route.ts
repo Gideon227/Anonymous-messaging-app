@@ -1,7 +1,7 @@
 import { connectToDB } from "@/utils/database";
 import User from "@/model/user";
 
-export const GET = async ( request: Request, { params }: { params: { id: string } } ) => {
+export const GET = async ( request: Request, { params }: { params: Promise<{ id: string }> } ) => {
     try {
        connectToDB()
        
