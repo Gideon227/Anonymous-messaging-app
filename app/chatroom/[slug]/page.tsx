@@ -2,12 +2,12 @@ import Chatroom from "@/components/Chatroom";
 import getAllMessages from "@/libs/getAllMessages";
 import { IMessage } from "@/model/messages";
 
-export async function generateStaticParams(){
-  const messages:IMessage[] = await getAllMessages();
-  return messages.map((message: IMessage) => ({
-    slug: message.chatRoomId.toString()
-  }))
-}
+// export async function generateStaticParams(){
+//   const messages:IMessage[] = await getAllMessages();
+//   return messages.map((message: IMessage) => ({
+//     slug: message.chatRoomId.toString()
+//   }))
+// }
 
 const page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next lint --max-warnings=0 || true",
+    "build": "next build && next lint --max-warnings=0",
     "start": "node_modules/next/dist/bin/next start -p $PORT",
     "lint": "next lint"
   },
