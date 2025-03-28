@@ -132,7 +132,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
         }
     }
     const userAvatar = avatars.find((avatar) => avatar.id === info.avatar); 
-    const displayLink = `${process.env.NEXT_PUBLIC_API_URL}/chatroom/${slug}`
+    const displayLink = `/chatroom/${slug}`
     const mobileShareLink = displayLink.substring(0, 20); 
     const shareLink = displayLink.substring(0, 38); 
 

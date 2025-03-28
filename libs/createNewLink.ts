@@ -1,6 +1,6 @@
 export default async function createNewLink( linkId: string, userId: string ) {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/links`, {
+        const response = await fetch(`/api/links`, {
             method: 'POST',
             body: JSON.stringify({
                 linkId: linkId,
