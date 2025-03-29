@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import { Arimo } from 'next/font/google'
+import ProgressProvider from "@/components/ProgressProvider";
 import "./globals.css";
 
 
@@ -21,8 +22,10 @@ export default function RootLayout({
       <body
         className={arimo.className}
       >
-        <Toaster />
-        {children}
+        <ProgressProvider>
+          <Toaster />
+          {children}
+        </ProgressProvider>
       </body>
     </html>
   );

@@ -1,10 +1,57 @@
-import React from 'react'
+"use client"
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
+import { useRouter } from 'next-nprogress-bar';
+import createUniqueLinkId from "@/libs/createlink";
+import createNewLink from "@/libs/createNewLink";
+import getSingleUser from "@/libs/getSingleUser";
+import Loading from '@/app/loading';
 
+interface Profile {
+  username: string;
+  avatar: number;
+}
 
 const Navbar = () => {
+    const router = useRouter()
+    const [renderLink, setRenderLink] = useState("")
+    const [loading, setLoading] = useState(false)
+      
+        useEffect(() => {
+          const profileFromLocalStorage = localStorage.getItem("profile");
+          const profile: Profile | null = profileFromLocalStorage
+            ? JSON.parse(profileFromLocalStorage)
+            : null;
+      
+          if (profile) {
+            (async () => {
+              try {
+                setLoading(true)
+                const chatRoomLink = await createUniqueLinkId();
+                const userId = await getSingleUser(profile.username);
+                await createNewLink(chatRoomLink, userId._id);
+                setRenderLink(`/chatroom/${chatRoomLink}`)
+              } catch (error) {
+                console.error("Failed to create chat room link", error);
+              } finally{
+                setLoading(false)
+              }
+            })();
+          } else {
+            setRenderLink("/create-profile");
+          }
+        }, []);
+    
+        const buttonLink = () => {
+          router.push(renderLink)
+        }
+    
+        if(loading){
+          <Loading />
+        }
+
   return (
     <header className='md:py-4 md:px-16'>
         <div className='flex justify-between items-center md:px-4 py-2'>
@@ -13,11 +60,11 @@ const Navbar = () => {
               ANONYMOUS
             </Link>
 
-            <Link href='/create-profile' className='max-lg:hidden bg-[#2B59FF] py-2 px-6 rounded-sm text-[13px] font-normal text-white max-md:px-4'>Create chatroom</Link>
+            <button onClick={() => buttonLink()} className='max-lg:hidden bg-[#2B59FF] py-2 px-6 rounded-sm text-[13px] font-normal text-white max-md:px-4'>Create chatroom</button>
 
-            <div className='lg:hidden'>
+            <button onClick={() => buttonLink()} className='lg:hidden'>
               <HiOutlineChatBubbleLeftRight size={20} color='#2B59FF'/>
-            </div>
+            </button>
         </div>
     </header>
   )

@@ -25,16 +25,8 @@ const Setup = () => {
       return;
     }
 
-    // await createProfile(formData);
-    // alert("Profile created successfully!");
-    // localStorage.setItem("profile", JSON.stringify({username: formData.username, avatar: formData.avatar}));
-    // const chatRoomLink = await createUniqueLinkId()
-    // const userId = await getSingleUser(formData.username)
-    // await createNewLink(chatRoomLink, userId._id )
-    // router.push(`/chatroom/${chatRoomLink}`)
     try {
       await createProfile(formData);
-      alert("Profile created successfully!");
       localStorage.setItem(
         "profile",
         JSON.stringify({ username: formData.username, avatar: formData.avatar })

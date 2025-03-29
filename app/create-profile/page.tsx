@@ -1,8 +1,8 @@
 "use client";
-
+import Loading from "../loading";
 import Setup from "@/components/Setup";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, Suspense } from "react";
 import createUniqueLinkId from "@/libs/createlink";
 import createNewLink from "@/libs/createNewLink";
 import getSingleUser from "@/libs/getSingleUser";
@@ -43,9 +43,11 @@ const CreateProfilePage = () => {
   if (!shouldRender) return null;
 
   return (
-    <div className="lg:mt-32 mt-8">
-      <Setup />
-    </div>
+    <Suspense fallback={<Loading />}>
+      <div className="lg:mt-32 mt-8">
+        <Setup />
+      </div>
+    </Suspense>
   );
 };
 

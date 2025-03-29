@@ -1,7 +1,8 @@
 import { connectToDB } from "@/utils/database";
 import Link from "@/model/link";
+import { NextRequest } from "next/server";
 
-export const POST = async (request: Request) => {
+export const POST = async (request: NextRequest) => {
 
     const { linkId, userId } = await request.json()
     try {
@@ -36,8 +37,7 @@ export const POST = async (request: Request) => {
     }
 }
 
-
-export const GET = async (request: Request) => {
+export const GET = async (request: NextRequest) => {
   const url = new URL(request.url); 
   const linkId = url.searchParams.get("link"); 
 

@@ -11,14 +11,13 @@ import { IoShareSocial } from "react-icons/io5";
 import { avatars, Avatar } from "@/constants";
 import { RxCross2 } from 'react-icons/rx';
 import { PiLinkSimpleLight } from "react-icons/pi";
-import { FaWhatsapp } from "react-icons/fa";
-import { FaRegClipboard } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { FaFacebookF } from "react-icons/fa6";
+import { FaWhatsapp, FaRegClipboard } from "react-icons/fa";
+import { FaXTwitter, FaFacebookF } from "react-icons/fa6";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { socket } from '@/libs/socketClient';
 import { IUser } from '@/model/user'
 import { IoIosSend } from "react-icons/io";
+import TextareaAutosize from 'react-textarea-autosize';
 
 
 const Conversation = ( { slug }: { slug: string } ) => {
@@ -101,7 +100,6 @@ const Conversation = ( { slug }: { slug: string } ) => {
         socket.on("newMessage", (message: IMessage) => {
             setMessages((prevMessages) => [...prevMessages, message]);
             scrollToBottom();
-            console.log(message)
         });
     
         socket.on("disconnect", () => {
@@ -113,7 +111,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
             socket.off("newMessage");
         };
       
-      },[])
+    },[slug])
 
 
     const handleClick = async () => {
@@ -168,7 +166,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
             </div>
         </div>
         <div className="lg:w-11/12 max-lg:w-full flex flex-col justify-center mx-auto md:px-12 px-2">
-            <div className='flex-1 overflow-hidden py-28 max-md:pt-20 max-md:pb-12 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
+            <div className='flex-1 overflow-hidden py-28 max-md:py-20 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
                 <div className="space-y-4 h-full md:mb-4 mb-2">    
                     {messages.map((msg, index) => {
     
@@ -203,8 +201,8 @@ const Conversation = ( { slug }: { slug: string } ) => {
 
             <div className='flex flex-col fixed w-full lg:w-5/6 -translate-x-1/2 bottom-0 left-[50%] px-4 lg:px-10 bg-white py-2 z-50'>
                 <div className='flex justify-between items-center gap-1 max-md:gap-x-[4px] rounded-xl px-1 py-1.5'>
-                    <input 
-                        type='text'
+                    <TextareaAutosize 
+                        maxRows={5}
                         onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
                         required
                         value={formData.message}
@@ -212,8 +210,8 @@ const Conversation = ( { slug }: { slug: string } ) => {
                         className='bg-[#F6F6F6] rounded-xl py-1 outline-none w-full text-gray-600 text-[14px] max-md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
                     />
 
-                    <input 
-                        type='text'
+                    <TextareaAutosize 
+                        maxRows={3}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         required
                         value={formData.message}
@@ -256,7 +254,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
                     </div>
 
                     {showSocials && (
-                        <div className='pb-4 pt-2 flex justify-self-center items-center justify-around space-x-6'>
+                        <div className='pb-4 pt-2 flex justify-self-center items-center justify-around space-x-6 max-md:space-x-4'>
                             <button onClick={() => window.open(whatsappLink, '_blank')} className='rounded-full bg-gray-500 p-2.5'><FaWhatsapp color='white' size={18} /></button>
                             <button onClick={() => onClipboardClick()} className='rounded-full bg-gray-500 p-2.5'><FaRegClipboard color='white' size={18} /></button>
                             <button onClick={() => window.open(twitterLink, '_blank')} className='rounded-full bg-gray-500 p-2.5'><FaXTwitter color='white' size={18} /></button>

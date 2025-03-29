@@ -2,6 +2,7 @@
 import React, { useLayoutEffect, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Conversation from "@/components/Conversation";
+import Loading from "@/app/loading";
 
 interface Profile {
   userName: string;
@@ -33,7 +34,7 @@ const Chatroom = ({ slug }: { slug: string }) => {
   
 
   if (loading) {
-    return <div>Loading...</div>; // Show a loading indicator
+    return <Loading />;
   }
 
   return profile ? (

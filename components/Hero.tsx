@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link'
 import BoxContent from './BoxContent';
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
+import { useRouter } from 'next-nprogress-bar';
 import createUniqueLinkId from "@/libs/createlink";
 import createNewLink from "@/libs/createNewLink";
 import getSingleUser from "@/libs/getSingleUser";
+import Loading from '@/app/loading';
 
 interface Profile {
   username: string;
@@ -16,6 +18,7 @@ interface Profile {
 export const Hero = () => {
   const router = useRouter();
   const [renderLink, setRenderLink] = useState('');
+  const [loading, setLoading] = useState(false)
   
     useEffect(() => {
       const profileFromLocalStorage = localStorage.getItem("profile");
@@ -26,12 +29,15 @@ export const Hero = () => {
       if (profile) {
         (async () => {
           try {
+            setLoading(true)
             const chatRoomLink = await createUniqueLinkId();
             const userId = await getSingleUser(profile.username);
             await createNewLink(chatRoomLink, userId._id);
             setRenderLink(`/chatroom/${chatRoomLink}`)
           } catch (error) {
             console.error("Failed to create chat room link", error);
+          } finally{
+            setLoading(false)
           }
         })();
       } else {
@@ -41,6 +47,10 @@ export const Hero = () => {
 
     const buttonLink = () => {
       router.push(renderLink)
+    }
+
+    if(loading){
+      <Loading />
     }
 
   return (
