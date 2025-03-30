@@ -18,13 +18,12 @@ interface Profile {
 
 interface MessageBoxProps {
   message: IMessage;
-  user: Profile;
   userDb: IUser | null;
   showName: boolean;
 }
 
 
-const MessageBox: React.FC<MessageBoxProps> = ({ message, user, userDb, showName }) => {
+const MessageBox: React.FC<MessageBoxProps> = ({ message, userDb, showName }) => {
   const senderId = message.senderId as IUser;
 
   const userAvatar = avatars.find((avatar) => avatar.id === senderId.avatar);

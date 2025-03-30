@@ -22,10 +22,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 
 const Conversation = ( { slug }: { slug: string } ) => {
     const [messages, setMessages] = useState<IMessage[]>([])
-    const [info, setInfo] = useState<Profile>({
-        username: '',
-        avatar: 0
-    })
+    const [info, setInfo] = useState<any>(null)
     const [formData, setFormData] = useState<FormData>({
         chatRoomId: slug, 
         message: " ", 
@@ -70,6 +67,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
               setFormData((prev) => ({ ...prev, senderId: user._id }));
               setMessages(chatMessages);
               scrollToBottom()
+              
             } catch (error) {
               console.error("Error fetching data:", error);
             }
@@ -115,13 +113,13 @@ const Conversation = ( { slug }: { slug: string } ) => {
 
 
     const handleClick = async () => {
-        if (!formData.chatRoomId || !formData.message || !formData.senderId) {
+        if (!formData.chatRoomId || !formData.message || !info) {
             console.error("Missing fields in formData.");
             return;
         }
-        
+
         try {
-            socket.emit("sendMessage", { room: `chatroom/${slug}`, message: formData?.message, senderId: formData?.senderId })
+            socket.emit("sendMessage", { room: `chatroom/${slug}`, message: formData?.message, senderId: info })
             await sendMessage(formData);
             setFormData((prev) => ({ ...prev, message: "" })); 
             scrollToBottom();
@@ -129,7 +127,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
             console.error("Failed to send message:", error);
         }
     }
-    const userAvatar = avatars.find((avatar) => avatar.id === info.avatar); 
+    const userAvatar = avatars.find((avatar) => avatar.id === info?.avatar); 
     const displayLink = `${process.env.NEXT_PUBLIC_API_URL}/chatroom/${slug}`
     const mobileShareLink = displayLink.substring(0, 20); 
     const shareLink = displayLink.substring(0, 38); 
@@ -189,7 +187,6 @@ const Conversation = ( { slug }: { slug: string } ) => {
                         >
                         <MessageBox
                             message={msg}
-                            user={info}
                             userDb={userDb}
                             showName={showName}
                         />
@@ -254,7 +251,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
                     </div>
 
                     {showSocials && (
-                        <div className='pb-4 pt-2 flex justify-self-center items-center justify-around space-x-6 max-md:space-x-4'>
+                        <div className='pb-4 pt-2 flex justify-self-center items-center justify-around space-x-6 max-md:space-x-2.5'>
                             <button onClick={() => window.open(whatsappLink, '_blank')} className='rounded-full bg-gray-500 p-2.5'><FaWhatsapp color='white' size={18} /></button>
                             <button onClick={() => onClipboardClick()} className='rounded-full bg-gray-500 p-2.5'><FaRegClipboard color='white' size={18} /></button>
                             <button onClick={() => window.open(twitterLink, '_blank')} className='rounded-full bg-gray-500 p-2.5'><FaXTwitter color='white' size={18} /></button>
