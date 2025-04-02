@@ -13,6 +13,7 @@ const Setup = () => {
     username: '',
     avatar: 0
   })
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams(); // Get query parameters
   const redirectFromLink = searchParams?.get("redirect");
@@ -26,6 +27,7 @@ const Setup = () => {
     }
 
     try {
+      setLoading(true)
       await createProfile(formData);
       localStorage.setItem(
         "profile",
@@ -42,7 +44,10 @@ const Setup = () => {
       }
     } catch (error) {
       console.error("Failed to create profile and redirect", error);
+    } finally{
+      setLoading(false)
     }
+
   }
 
   return (
@@ -84,19 +89,13 @@ const Setup = () => {
         <div className='mt-2'>
           <button 
             onClick={(e) => handleSubmit(e)} 
-            className='bg-[#2B59FF] mx-1 border text-white border-[#2B59FF] py-2.5 px-12 text-[14px] font-medium rounded'>
-              Create Profile
+            disabled={loading}
+            className='bg-[#2B59FF] flex items-center justify-center mx-1 border text-white border-[#2B59FF] py-2 px-10 text-[14px] font-normal rounded disabled:opacity-60'>
+              Create profile
+              {loading && (<div className="ml-4 w-4 h-4 border-2 border-white-500 border-t-transparent rounded-full animate-spin"></div>)}
           </button>
         </div>
       </div>
-
-      {/* <div className='absolute right-20 bottom-20'>
-        <button 
-          onClick={(e) => handleSubmit(e)} 
-          className='bg-[#2B59FF] mx-1 hover:bg-[#fff] border hover:text-black text-white border-[#452b1a] py-2.5 px-12 text-[16px] font-medium rounded'>
-            Create Profile
-        </button>
-      </div> */}
     </div>
   )
 }
