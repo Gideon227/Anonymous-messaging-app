@@ -15,12 +15,20 @@ interface Profile {
   avatar: number;
 }
 
+
 export const Hero = () => {
   const router = useRouter();
   const [renderLink, setRenderLink] = useState('');
   const [loading, setLoading] = useState(false)
   
     useEffect(() => {
+      const LOCAL_STORAGE_VERSION = 'v2';
+
+      if(localStorage.getItem('appVersion') !== LOCAL_STORAGE_VERSION){
+        localStorage.clear();
+        localStorage.setItem('appVersion', LOCAL_STORAGE_VERSION)
+      }
+
       const profileFromLocalStorage = localStorage.getItem("profile");
       const profile: Profile | null = profileFromLocalStorage
         ? JSON.parse(profileFromLocalStorage)
@@ -33,7 +41,7 @@ export const Hero = () => {
             const chatRoomLink = await createUniqueLinkId();
             const userId = await getSingleUser(profile.username);
             await createNewLink(chatRoomLink, userId._id);
-            setRenderLink(`/chatroom/${chatRoomLink}`)
+            setRenderLink(`/chatroom/${chatRoomLink}/set-password`)
           } catch (error) {
             console.error("Failed to create chat room link", error);
           } finally{
@@ -49,7 +57,7 @@ export const Hero = () => {
       router.push(renderLink)
     }
 
-    if(loading){
+    if(loading) {
       <Loading />
     }
 

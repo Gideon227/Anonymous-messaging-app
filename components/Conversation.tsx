@@ -5,6 +5,8 @@ import { IMessage } from '@/model/messages';
 import getAllChatroomMessages from '@/libs/getChatroomMessages';
 import getSingleUser from '@/libs/getSingleUser';
 import sendMessage from '@/libs/sendMessage';
+import Image from 'next/image';
+import Link from 'next/link';
 import { FaArrowUp } from "react-icons/fa6";
 import MessageBox from './MessageBox';
 import { IoShareSocial } from "react-icons/io5";
@@ -18,6 +20,7 @@ import { socket } from '@/libs/socketClient';
 import { IUser } from '@/model/user'
 import { IoIosSend } from "react-icons/io";
 import TextareaAutosize from 'react-textarea-autosize';
+import ChangeUserInfo from './ChangeUserInfo';
 
 
 const Conversation = ( { slug }: { slug: string } ) => {
@@ -27,10 +30,12 @@ const Conversation = ( { slug }: { slug: string } ) => {
         chatRoomId: slug, 
         message: " ", 
         senderId: " ",
+        senderName: ""
     })
     const [showModal, setShowModal] = useState<boolean>(false)
     const [showSocials, setShowSocials] = useState<boolean>(false)
     const [userDb, setUserDb] = useState<IUser | null>(null);
+    const [modalUser, setModalUser] = useState<boolean>(false)
 
     const messageEndRef = useRef<HTMLDivElement>(null); 
 
@@ -47,6 +52,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
         chatRoomId: string;
         message: string;
         senderId: string;
+        senderName: string
     }
 
     useEffect(() => {
@@ -64,7 +70,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
                 getAllChatroomMessages(slug),
               ]);
               setInfo(user);
-              setFormData((prev) => ({ ...prev, senderId: user._id }));
+              setFormData((prev) => ({ ...prev, senderId: user._id, senderName: user.username }));
               setMessages(chatMessages);
               scrollToBottom()
               
@@ -74,18 +80,18 @@ const Conversation = ( { slug }: { slug: string } ) => {
           }
         };
 
-        const fetchUserData = async () => {
-          try {
-            const getData = await getSingleUser(profile?.username);
-            setUserDb(getData);
-          } catch (err) {
-              console.error("Error fetching user data:", err);
-          }
-        };
+        // const fetchUserData = async () => {
+        //   try {
+        //     const getData = await getSingleUser(profile?.username);
+        //     setUserDb(getData);
+        //   } catch (err) {
+        //       console.error("Error fetching user data:", err);
+        //   }
+        // };
         
-        if (profile?.username) {
-           fetchUserData();
-        }
+        // if (profile?.username) {
+        //    fetchUserData();
+        // }
         fetchData();    
       }, []);
       
@@ -117,9 +123,11 @@ const Conversation = ( { slug }: { slug: string } ) => {
             console.error("Missing fields in formData.");
             return;
         }
+        console.log(info)
 
         try {
-            socket.emit("sendMessage", { room: `chatroom/${slug}`, message: formData?.message, senderId: info })
+            socket.emit("sendMessage", { room: `chatroom/${slug}`, message: formData?.message, senderId: info, senderName: formData.senderName})
+            console.log(formData)
             await sendMessage(formData);
             setFormData((prev) => ({ ...prev, message: "" })); 
             scrollToBottom();
@@ -152,15 +160,23 @@ const Conversation = ( { slug }: { slug: string } ) => {
 
   return (
     <div className='bg-white flex flex-col h-screen relative'>
-        <div className='flex items-center justify-between bg-gray-100 py-4 px-6 fixed top-0 w-full z-10 border-b border-gray-300 md:py-3 md:px-16  max-md:mb-4 border-b-zinc-200 '>
-            <h1 className='text-[18px] max-lg:text-[16px] text-gray-900 italic font-medium'>Anonymous Chatroom</h1>
+        <div className='border-b flex items-center justify-between bg-white py-4 px-6 fixed top-0 w-full z-10 md:py-3 md:px-16  max-md:mb-4 border-b-zinc-200 '>
+            <div className='flex space-x-2 justify-start items-start pl-1'>
+                <Link href='/' className='italic font-semibold text-black text-[14px] max-md:text-[12px] flex items-center  my-auto justify-center inset-y-3.5'>
+                    <Image src='/logo.png' alt='logo' className='px-1 mb-[1px]' width={45} height={37} color='#2B59FF'/>
+                </Link>
+                <div className='flex flex-col space-y-[2px]'>
+                    <h1 className='text-[16px] text-black font-medium'>Anonymous Chatroom</h1>
+                    <p className='text-[10px] text-zinc-400 font-normal p-0 -mt-0.5'>Keep the chatroom safe</p>
+                </div>
+            </div>
             <div className='flex space-x-6 items-center'>
                 <button onClick={() => setShowModal(true)} className='max-md:hidden rounded-full py-1 max-lg:py-1 max-lg:gap-x-1 px-4 border-zinc-500 border flex items-center gap-2 text-[14px] text-zinc-800'>
                     <IoShareSocial /> 
                     <p>Share</p>
                 </button>
-                <span className='max-md:hidden p-2 rounded-full bg-gray-300 hover:bg-gray-500'>{userAvatar && <userAvatar.image size={21} />}</span>
                 <button className='text-zinc-600 md:hidden' onClick={() => setShowModal(true)}><RiShareForward2Fill size={22} /></button>
+                <button onClick={() => setModalUser(true)} className='p-2 rounded-full bg-gray-300 hover:bg-gray-500'>{userAvatar && <userAvatar.image size={21} />}</button>
             </div>
         </div>
         <div className="lg:w-11/12 max-lg:w-full flex flex-col justify-center mx-auto md:px-12 px-2">
@@ -182,12 +198,12 @@ const Conversation = ( { slug }: { slug: string } ) => {
                         <div
                             key={msg._id || index}
                             className={`${
-                                msg.senderId === userDb?._id ? "items-end" : "items-start"
+                                msg.senderId === info?._id ? "items-end" : "items-start"
                             }`}
                         >
                         <MessageBox
                             message={msg}
-                            userDb={userDb}
+                            info={info}
                             showName={showName}
                         />
                         </div>
@@ -204,7 +220,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
                         required
                         value={formData.message}
                         placeholder='Enter your message here...'
-                        className='bg-[#F6F6F6] rounded-xl py-1 outline-none w-full text-gray-600 text-[14px] max-md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
+                        className='bg-[#F6F6F6] rounded-xl py-2.5 outline-none w-full text-gray-600 text-[14px] max-md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
                     />
 
                     <TextareaAutosize 
@@ -213,7 +229,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
                         required
                         value={formData.message}
                         placeholder='Type a message...'
-                        className='bg-[#F6F6F6] rounded-xl py-2 outline-none w-full text-gray-600 text-[14px] md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
+                        className='bg-[#F6F6F6] rounded-xl py-2 outline-none w-full text-gray-600 text-[16px] md:hidden px-4 placeholder:font-normal placeholder:text-zinc-500'
                     />
 
                     <button onClick={() => handleClick()} className='py-2 text-[#2B59FF] font-bold rounded-full'>
@@ -262,6 +278,8 @@ const Conversation = ( { slug }: { slug: string } ) => {
                 </div>
             </div>
         )}
+
+        {modalUser && (<ChangeUserInfo params={info._id} modal={setModalUser} />)}
 
     </div>
   )

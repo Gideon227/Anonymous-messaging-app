@@ -9,6 +9,7 @@ export interface IMessage extends Document {
   message: string;
   createdAt: Date;
   senderId: mongoose.Schema.Types.ObjectId | IUser['_id'];
+  senderName: string;
   _id: string;
 }
 
@@ -28,6 +29,10 @@ const messageSchema = new Schema<IMessage>({
     ref: User,
     required: true,
   },
+  senderName: {
+    type: String,
+    required: true
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -41,6 +46,8 @@ messageSchema.pre<Query<any, IMessage>>(/^find/, function (next) {
   });
   next();
 });
+
+delete mongoose.models.Message;
 
 // Create the Message model
 const Message = mongoose.models.Message || mongoose.model<IMessage>('Message', messageSchema);

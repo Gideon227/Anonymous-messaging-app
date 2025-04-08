@@ -4,14 +4,15 @@ import Message from "@/model/messages";
 
 export const POST = async (request: Request) => {
 
-    const { chatRoomId, message, senderId } = await request.json()
+    const { chatRoomId, message, senderId, senderName } = await request.json()
     try {
         await connectToDB()
 
         const newMessage = new Message({
             chatRoomId,
             message,
-            senderId
+            senderId,
+            senderName
         })
         await newMessage.save()
         console.log("new message added")

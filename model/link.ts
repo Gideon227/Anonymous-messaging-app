@@ -3,6 +3,8 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 export interface ILink extends Document {
   linkId: string,
   participants: string[];
+  password: string;
+  createdBy: string;
   createdAt: Date;
 }
 
@@ -15,6 +17,13 @@ const linkSchema = new Schema<ILink>({
   participants: {
     type: [String],
     default: [],
+  },
+  password: {
+    type: String,
+  },
+  createdBy: {
+    type: String,
+    required: true
   },
   createdAt: {
     type: Date,

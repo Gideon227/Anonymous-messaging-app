@@ -1,5 +1,6 @@
 import { connectToDB } from "@/utils/database";
 import Link from "@/model/link";
+import User from "@/model/user";
 import { NextRequest } from "next/server";
 
 export const POST = async (request: NextRequest) => {
@@ -23,9 +24,11 @@ export const POST = async (request: NextRequest) => {
        }else{
             const newLink = new Link({
                 linkId,
-                participants: [userId]
+                participants:[userId],
+                createdBy: userId
             })
             await newLink.save()
+            await User.findByIdAndUpdate(userId,  { $push: { linksCreated: newLink._id } }, { new: true })
             console.log("new link added")
 
             return new Response(JSON.stringify(newLink), { status: 201 })

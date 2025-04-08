@@ -2,6 +2,7 @@ interface FormData {
     chatRoomId: string;
     message: string;
     senderId: string;
+    senderName: string;
 }
 
 export default async function sendMessage(data: FormData) {
@@ -12,7 +13,8 @@ export default async function sendMessage(data: FormData) {
             body: JSON.stringify({
                 chatRoomId: data.chatRoomId,
                 message: data.message,
-                senderId: data.senderId
+                senderId: data.senderId,
+                senderName: data.senderName
             })
         })
 

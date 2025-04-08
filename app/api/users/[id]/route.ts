@@ -1,7 +1,8 @@
 import { connectToDB } from "@/utils/database";
 import User from "@/model/user";
+import { NextRequest } from "next/server";
 
-export const GET = async ( request: Request, { params }: { params: Promise<{ id: string }> } ) => {
+export const GET = async ( request: NextRequest, { params }: { params: Promise<{ id: string }> } ) => {
     try {
        connectToDB()
        
@@ -22,4 +23,26 @@ export const GET = async ( request: Request, { params }: { params: Promise<{ id:
     } catch (error) {
         return new Response("Failed to fetch a user", { status: 500 })   
     }
+}
+
+export const PATCH = async ( request: NextRequest, { params }: { params: Promise<{ id: string }> } ) => {
+   const { id } = await params
+
+   const { username, avatar } = await request.json()
+   try {
+      connectToDB()
+
+      const updatedUser = await User.findByIdAndUpdate( 
+         id, 
+         { $set: { username, avatar } }, 
+         { new: true, runValidators: true }
+      )
+
+      if (!updatedUser) throw new Error('Product not found or not updated');
+
+      return new Response(JSON.stringify(updatedUser), {status: 200} )
+   } catch (error) {
+      console.error('Error updating product:', error);
+      return new Response("Failed to update a single product", { status: 500 })
+   }  
 }

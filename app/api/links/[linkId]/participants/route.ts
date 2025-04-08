@@ -8,7 +8,7 @@ export const PATCH = async ( request: NextRequest, { params }: { params: Promise
 
     try {
         await connectToDB();
-        const updatedLinkParticipants = await Link.findByIdAndUpdate( linkId, { $push: { participants: userId }}, { new: true, runValidators: true } )
+        const updatedLinkParticipants = await Link.findOneAndUpdate({ linkId }, { $push: { participants: userId }}, { new: true, runValidators: true } )
         if(!updatedLinkParticipants) throw new Error ('Link Id not found or not updated');
 
         return new Response(JSON.stringify(updatedLinkParticipants) , { status: 200 })

@@ -1,9 +1,11 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
+import Link from './link';
 
 // Define the interface for the User document
 export interface IUser extends Document {
   username: string;
   avatar: number,
+  linksCreated?: Types.ObjectId[], 
   createdAt: Date;
 }
 
@@ -12,12 +14,16 @@ const userSchema = new Schema<IUser>({
   username: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   },
   avatar: {
     type: Number,
     required: true
+  },
+  linksCreated: {
+    type: [Types.ObjectId],
+    ref: Link,
+    required: false,
   },
   createdAt: {
     type: Date,
