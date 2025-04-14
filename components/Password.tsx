@@ -123,9 +123,9 @@ const Password = ({ slug, userId }: { slug: string; userId: string }) => {
         </div>
         <button
           type="submit"
-          className="mt-20 px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition text-[14px] w-80 flex items-center justify-center"
+          className={`${loading && ("bg-blue-400")} mt-20 px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition text-[14px] w-80 flex items-center justify-center`}
         >
-          {loading? 'Creating' : 'Create password'}
+          {loading? 'Loading...' : 'Continue'}
           {loading && (<div className="ml-4 w-4 h-4 border-2 border-white-500 border-t-transparent rounded-full animate-spin"></div>)}              
         </button>
       </form>

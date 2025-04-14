@@ -38,7 +38,7 @@ export const Hero = () => {
         (async () => {
           try {
             setLoading(true)
-            const chatRoomLink = await createUniqueLinkId();
+            const chatRoomLink: string = await createUniqueLinkId();
             const userId = await getSingleUser(profile.username);
             await createNewLink(chatRoomLink, userId._id);
             setRenderLink(`/chatroom/${chatRoomLink}/set-password`)
@@ -81,7 +81,7 @@ export const Hero = () => {
           </div>
         </div>
         <div className='max-lg:order-first relative'>
-            <BoxContent text={'Great software that allows you to chat anonymously from any place at any time without any interruption.'} name={'Anonymous user'} className="absolute bottom-2 -left-60 max-md:-left-10 max-md:-bottom-5"/>
+            <BoxContent text={'I can finally get a lot off my chest about my boss without anyone finding out it&#39;s me. Feels like such a weight lifted!'} name={'Anonymous user'} className="absolute bottom-2 -left-60 max-md:-left-10 max-md:-bottom-5"/>
             <Image src='/hero.png' width={300} height={300} alt='hero section image' objectFit='cover' className='md:hidden' />
             <Image src='/hero.png' width={400} height={200} alt='hero section image' objectFit='cover' className='max-md:hidden' />
             <BoxContent text={'Great software that allows you to chat anonymously from any place at any time without any interruption.'} name={'Genuine character'} className="absolute bottom-32 -right-10 max-md:-right-10 max-md:bottom-28"/>

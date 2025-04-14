@@ -35,7 +35,8 @@ const Conversation = ( { slug }: { slug: string } ) => {
     const [showModal, setShowModal] = useState<boolean>(false)
     const [showSocials, setShowSocials] = useState<boolean>(false)
     const [userDb, setUserDb] = useState<IUser | null>(null);
-    const [modalUser, setModalUser] = useState<boolean>(false)
+    const [modalUser, setModalUser] = useState<boolean>(false);
+    const [connectionStatus, setConnectionStatus] = useState("connected");
 
     const messageEndRef = useRef<HTMLDivElement>(null); 
 
@@ -96,27 +97,83 @@ const Conversation = ( { slug }: { slug: string } ) => {
       }, []);
       
 
+    // useEffect(() => {
+    //     // socket.on("connect", () => {
+    //     //     console.log("Socket connected")
+    //     // })
+    //     socket.emit('joinRoom', `chatroom/${slug}`);
+    //     socket.on("newMessage", (message: IMessage) => {
+    //         setMessages((prevMessages) => [...prevMessages, message]);
+    //         scrollToBottom();
+    //     });
+    
+    //     socket.on("disconnect", () => {
+    //         console.log("Socket disconnected")
+    //     })
+          
+    //     return () => {
+    //         socket.emit('leaveRoom', `chatroom/${slug}`);
+    //         socket.off("newMessage");
+    //     };
+      
+    // },[slug])
+
     useEffect(() => {
-        // socket.on("connect", () => {
-        //     console.log("Socket connected")
-        // })
-        socket.emit('joinRoom', `chatroom/${slug}`);
-        socket.on("newMessage", (message: IMessage) => {
+        const roomName = `chatroom/${slug}`;
+        
+        const handleNewMessage = (message: IMessage) => {
             setMessages((prevMessages) => [...prevMessages, message]);
             scrollToBottom();
-        });
-    
-        socket.on("disconnect", () => {
-            console.log("Socket disconnected")
-        })
-          
-        return () => {
-            socket.emit('leaveRoom', `chatroom/${slug}`);
-            socket.off("newMessage");
         };
-      
-    },[slug])
+    
+        const handleReconnect = () => {
+            if (socket.connected) {
+                socket.emit('joinRoom', roomName);
+                console.log("Rejoined room after reconnect:", roomName);
+            }
+        };
+    
+        socket.emit('joinRoom', roomName);
+        socket.on("newMessage", handleNewMessage);
+        socket.on("connect", handleReconnect); // reconnect-safe
+    
+        return () => {
+            socket.emit('leaveRoom', roomName);
+            socket.off("newMessage", handleNewMessage);
+            socket.off("connect", handleReconnect);
+        };
+    }, [slug]);
 
+
+    useEffect(() => {
+        const handleDisconnect = () => {
+            setConnectionStatus("disconnected");
+            toast.error("You are offline. Trying to reconnect...", {
+                duration: 4000,
+                style: {
+                    fontSize: "14px",
+                },
+            });
+        };
+    
+        const handleConnect = () => {
+            setConnectionStatus("connected");
+            toast.success("Connection restored!", {
+                duration: 2000,
+                style: {
+                    fontSize: "14px",
+                },
+            });
+        };
+    
+        socket.on("disconnect", handleDisconnect);
+        socket.on("connect", handleConnect);
+    
+        return () => {
+            socket.off("disconnect", handleDisconnect);
+            socket.off("connect", handleConnect);
+        };
+    }, []);
 
     const handleClick = async () => {
         if (!formData.chatRoomId || !formData.message || !info) {
@@ -213,6 +270,11 @@ const Conversation = ( { slug }: { slug: string } ) => {
             </div>
 
             <div className='flex flex-col fixed w-full lg:w-5/6 -translate-x-1/2 bottom-0 left-[50%] px-4 lg:px-10 bg-white py-2 z-50'>
+                {connectionStatus === "disconnected" && (
+                    <p className="text-center bg-red-600 text-white py-2 text-sm">
+                        You're offline. Messages may not deliver.
+                    </p>
+                )}
                 <div className='flex justify-between items-center gap-1 max-md:gap-x-[4px] rounded-xl px-1 py-1.5'>
                     <TextareaAutosize 
                         maxRows={5}
