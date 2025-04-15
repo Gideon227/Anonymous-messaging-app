@@ -271,7 +271,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
 
             <div className='flex flex-col fixed w-full lg:w-5/6 -translate-x-1/2 bottom-0 left-[50%] px-4 lg:px-10 bg-white py-2 z-50'>
                 {connectionStatus === "disconnected" && (
-                    <p className="text-center bg-red-600 text-white py-2 text-sm">
+                    <p className="text-center text-red-600 py-2 text-sm">
                         You're offline. Messages may not deliver.
                     </p>
                 )}
