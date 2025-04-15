@@ -237,7 +237,7 @@ const Conversation = ( { slug }: { slug: string } ) => {
             </div>
         </div>
         <div className="lg:w-11/12 max-lg:w-full flex flex-col justify-center mx-auto md:px-12 px-2">
-            <div className='flex-1 overflow-hidden py-28 max-md:py-20 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
+            <div className='flex-1 overflow-hidden py-28 max-md:py-20 max-md:pt-4 space-y-4 max-sm:px-3 max-lg:px-6 lg:px-12 '>
                 <div className="space-y-4 h-full md:mb-4 mb-2">    
                     {messages.map((msg, index) => {
     
